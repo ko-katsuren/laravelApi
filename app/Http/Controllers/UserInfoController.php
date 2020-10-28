@@ -108,7 +108,20 @@ class UserInfoController extends Controller
     public function update(Request $request)
     {
         //
+        $data = $request['params'];
+        $user = User::find($data['id'])->update(
+            [
+                'name' => $data['name']
+            ]
+        );
 
+        $profile = User::find($data['id'])->profile->where('user_id', $data['id'])->update(
+            [
+                'belong' => $data['belong'],
+                'age' => $data['age'],
+                'address' => $data['address']
+            ]
+        );
     }
 
     /**

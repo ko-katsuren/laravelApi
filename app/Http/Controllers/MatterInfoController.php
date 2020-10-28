@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Matter;
+
 
 class MatterInfoController extends Controller
 {
@@ -14,6 +16,11 @@ class MatterInfoController extends Controller
     public function index()
     {
         //
+        $matter = Matter::all();
+        return response()->json([
+            'message' => 'ok',
+            'matterData' => $matter,
+        ], 200, [], JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -25,6 +32,16 @@ class MatterInfoController extends Controller
     public function store(Request $request)
     {
         //
+        $data = json_decode($request['body'], true);
+
+        $matter = Matter::create(
+            [
+                'name' => $data['name'],
+                'price' => $data['price']
+            ]
+        );
+
+        $matter->save();
     }
 
     /**
@@ -33,9 +50,29 @@ class MatterInfoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
         //
+        $query = Matter::query();
+
+        if (isset($request->id)) {
+            $query->where('id', 'like', "%$request->id%");
+        }
+
+        if (isset($request->name)) {
+            $query->where('name', 'like', "%$request->name%");
+        }
+
+        if (isset($request->price)) {
+            $query->where('price',  $request->price);
+        }
+
+        $matters = $query->get();
+
+        return response()->json([
+            'message' => 'ok',
+            'matterData' => $matters,
+        ], 200, [], JSON_UNESCAPED_UNICODE);
     }
 
     /**
