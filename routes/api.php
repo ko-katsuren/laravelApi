@@ -20,9 +20,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResource('/userinfo', 'App\Http\Controllers\UserInfoController');
 Route::apiResource('/matterinfo', 'App\Http\Controllers\MatterInfoController');
-
 Route::post('/login', 'App\Http\Controllers\ApiController@login');
-Route::group(['/middleware' => ['auth.jwt']], function () {
-    Route::post('/logout', 'App\Http\Controllers\ApiController@logout');
+Route::post('/logout', 'App\Http\Controllers\ApiController@logout');
+
+Route::group(['middleware' => ['jwt.auth']], function () {
+
     Route::get('/user-info', 'App\Http\Controllers\ApiController@getUser');
 });

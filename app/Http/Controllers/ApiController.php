@@ -8,6 +8,7 @@ use Illuminate\Auth\AuthManager;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -31,10 +32,13 @@ class ApiController extends Controller
      */
     public function login(Request $request)
     {
-        $input = $request->only('email', 'password');
+        Log::info('login start');
+        Log::info($request);
+        $data = json_decode($request['body'], true);
+        Log::info($data);
         $jwt_token = null;
 
-        if (!$jwt_token = JWTAuth::attempt($input)) {
+        if (!$jwt_token = JWTAuth::attempt($data)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid Email or Password',
@@ -49,12 +53,18 @@ class ApiController extends Controller
 
     public function logout(Request $request)
     {
-        $this->validate($request, [
-            'token' => 'required'
-        ]);
+        // Log::info('logout start');
+        // Log::info($request);
+        // $this->validate($request, [
+        //     'token' => 'required'
+        // ]);
+        // Log::info('validate comp');
+        $request = json_decode($request['body'], true);
+        Log::info($request);
+        Log::info($request['token']);
 
         try {
-            JWTAuth::invalidate($request->token);
+            JWTAuth::invalidate($request['token']);
 
             return response()->json([
                 'success' => true,
